@@ -1,0 +1,286 @@
+{% extends "base.html" %}
+
+{% block title %}Answer Data Requests{% endblock %}
+
+{% block header %}Answer Data Requests{% endblock %}
+
+{% block subtitle %}Respond to assigned requests using voice or text input{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card card-custom">
+            <div class="card-header bg-light">
+                <h5 class="mb-0"><i class="fas fa-user me-2"></i>Select Person</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label for="personSelect" class="form-label">Assigned To</label>
+                    <select class="form-select" id="personSelect" onchange="loadRequestsForPerson()">
+                        <option value="">Select a person...</option>
+                    </select>
+                </div>
+                
+                <div id="requestsList" class="d-none">
+                    <h6>Pending Requests:</h6>
+                    <div class="list-group" id="requestsListContainer">
+                        <!-- Requests will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div id="responseForm" class="d-none">
+            <div class="card card-custom">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fas fa-clipboard-check me-2"></i>Response Form</h5>
+                </div>
+                <div class="card-body">
+                    <div id="requestDetails" class="mb-4">
+                        <!-- Request details will be loaded here -->
+                    </div>
+                    
+                    <form id="answerForm">
+                        <input type="hidden" id="requestId" name="request_id">
+                        
+                        <div class="mb-4">
+                            <label for="authorIdentifier" class="form-label">
+                                <i class="fas fa-user me-2"></i>Your Email/Identifier
+                            </label>
+                            <input type="email" class="form-control" id="authorIdentifier" name="author_identifier" required
+                                   placeholder="Enter your email address">
+                        </div>
+                        
+                        <div id="questionsContainer">
+                            <!-- Questions will be dynamically loaded here -->
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="button" class="btn btn-outline-secondary" onclick="resetForm()">
+                                <i class="fas fa-times me-2"></i>Clear
+                            </button>
+                            <button type="submit" class="btn btn-custom">
+                                <i class="fas fa-paper-plane me-2"></i>Submit Response
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div id="emptyState" class="card card-custom">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-inbox" style="font-size: 4rem; color: #ddd; margin-bottom: 20px;"></i>
+                <h5 class="text-muted">Select a person to view their pending requests</h5>
+                <p class="text-muted">Choose someone from the dropdown to see what data requests are waiting for responses.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="text-center">
+            <a href="/" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Home
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let currentRequestData = null;
+    
+    // Load people with assigned requests on page load
+    document.addEventListener('DOMContentLoaded', async function() {
+        try {
+            const response = await fetch('/api/assigned-people');
+            const people = await response.json();
+            
+            const select = document.getElementById('personSelect');
+            people.forEach(person => {
+                const option = document.createElement('option');
+                option.value = person;
+                option.textContent = person;
+                select.appendChild(option);
+            });
+        } catch (error) {
+            showAlert('Error loading people: ' + error.message, 'danger');
+        }
+    });
+    
+    async function loadRequestsForPerson() {
+        const personSelect = document.getElementById('personSelect');
+        const selectedPerson = personSelect.value;
+        
+        if (!selectedPerson) {
+            document.getElementById('requestsList').classList.add('d-none');
+            document.getElementById('responseForm').classList.add('d-none');
+            document.getElementById('emptyState').classList.remove('d-none');
+            return;
+        }
+        
+        try {
+            const response = await fetch(`/api/requests/${encodeURIComponent(selectedPerson)}`);
+            const requests = await response.json();
+            
+            const container = document.getElementById('requestsListContainer');
+            container.innerHTML = '';
+            
+            if (requests.length === 0) {
+                container.innerHTML = '<div class="alert alert-info">No pending requests found.</div>';
+            } else {
+                requests.forEach(request => {
+                    const requestItem = document.createElement('a');
+                    requestItem.href = '#';
+                    requestItem.className = 'list-group-item list-group-item-action';
+                    requestItem.onclick = () => loadRequestDetails(request.id);
+                    
+                    requestItem.innerHTML = `
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">${request.name}</h6>
+                            <small>${new Date(request.date_created).toLocaleDateString()}</small>
+                        </div>
+                        <p class="mb-1">${request.task_description}</p>
+                        <small>Questions: ${request.payload.questions ? request.payload.questions.length : 0}</small>
+                    `;
+                    
+                    container.appendChild(requestItem);
+                });
+            }
+            
+            document.getElementById('requestsList').classList.remove('d-none');
+            document.getElementById('emptyState').classList.add('d-none');
+            
+        } catch (error) {
+            showAlert('Error loading requests: ' + error.message, 'danger');
+        }
+    }
+    
+    async function loadRequestDetails(requestId) {
+        try {
+            const response = await fetch(`/api/request/${requestId}`);
+            const request = await response.json();
+            currentRequestData = request;
+            
+            // Update request details
+            document.getElementById('requestDetails').innerHTML = `
+                <div class="alert alert-info">
+                    <h6><i class="fas fa-info-circle me-2"></i>${request.name}</h6>
+                    <p class="mb-2"><strong>Task:</strong> ${request.task_description}</p>
+                    <p class="mb-0"><strong>Instructions:</strong> ${request.payload.instructions || request.description}</p>
+                </div>
+            `;
+            
+            // Set hidden request ID
+            document.getElementById('requestId').value = requestId;
+            
+            // Load questions
+            const questionsContainer = document.getElementById('questionsContainer');
+            questionsContainer.innerHTML = '';
+            
+            if (request.payload.questions && request.payload.questions.length > 0) {
+                request.payload.questions.forEach((question, index) => {
+                    const questionDiv = document.createElement('div');
+                    questionDiv.className = 'mb-4';
+                    
+                    questionDiv.innerHTML = `
+                        <label for="answer_${question.id}" class="form-label">
+                            <i class="fas fa-question-circle me-2"></i>${question.text}
+                        </label>
+                        <div class="input-group">
+                            <textarea class="form-control" id="answer_${question.id}" 
+                                      name="answer_${question.id}" 
+                                      rows="3" 
+                                      placeholder="Enter your answer here..."></textarea>
+                            <button type="button" class="mic-btn" 
+                                    onclick="startRecording('answer_${question.id}', 'mic_${question.id}')"
+                                    id="mic_${question.id}">
+                                <i class="fas fa-microphone"></i>
+                            </button>
+                        </div>
+                        <small class="form-text text-muted">Click the microphone to use voice input</small>
+                    `;
+                    
+                    questionsContainer.appendChild(questionDiv);
+                });
+            }
+            
+            document.getElementById('responseForm').classList.remove('d-none');
+            document.getElementById('emptyState').classList.add('d-none');
+            
+        } catch (error) {
+            showAlert('Error loading request details: ' + error.message, 'danger');
+        }
+    }
+    
+    // Handle form submission
+    document.getElementById('answerForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        if (!currentRequestData) {
+            showAlert('No request selected', 'warning');
+            return;
+        }
+        
+        // Collect answers
+        const answers = {};
+        const questions = currentRequestData.payload.questions || [];
+        
+        questions.forEach(question => {
+            const answerField = document.getElementById(`answer_${question.id}`);
+            if (answerField && answerField.value.trim()) {
+                answers[question.id] = {
+                    question: question.text,
+                    answer: answerField.value.trim(),
+                    type: question.type || 'text'
+                };
+            }
+        });
+        
+        if (Object.keys(answers).length === 0) {
+            showAlert('Please provide at least one answer', 'warning');
+            return;
+        }
+        
+        // Prepare form data
+        const formData = new FormData();
+        formData.append('request_id', document.getElementById('requestId').value);
+        formData.append('author_identifier', document.getElementById('authorIdentifier').value);
+        formData.append('answers', JSON.stringify(answers));
+        
+        try {
+            const response = await fetch('/api/responses', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showAlert('Response submitted successfully!', 'success');
+                // Reset and reload
+                resetForm();
+                setTimeout(() => {
+                    loadRequestsForPerson();
+                }, 1000);
+            } else {
+                showAlert('Error submitting response: ' + (result.detail || 'Unknown error'), 'danger');
+            }
+        } catch (error) {
+            showAlert('Network error: ' + error.message, 'danger');
+        }
+    });
+    
+    function resetForm() {
+        document.getElementById('answerForm').reset();
+        document.getElementById('responseForm').classList.add('d-none');
+        document.getElementById('emptyState').classList.remove('d-none');
+        currentRequestData = null;
+    }
+</script>
+{% endblock %} 

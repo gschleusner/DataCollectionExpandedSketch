@@ -1,0 +1,3 @@
+[submodule "hok_strangematter_components"]
+	path = hok_strangematter_components
+	url = https://github.com/HOKGroup/hok_strangematter_components

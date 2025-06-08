@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block title %}Create Data Request{% endblock %}
+
+{% block header %}Create Dynamic Project Data Request{% endblock %}
+
+{% block subtitle %}Define questions and assign to team members{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card card-custom">
+            <div class="card-header bg-light">
+                <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i>New Data Request</h5>
+            </div>
+            <div class="card-body">
+                <form id="requestForm">
+                    <div class="mb-4">
+                        <label for="assignedTo" class="form-label">
+                            <i class="fas fa-user me-2"></i>Assigned To (Email)
+                        </label>
+                        <input type="email" class="form-control" id="assignedTo" name="assigned_to" required
+                               placeholder="Enter email address of person responsible">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="description" class="form-label">
+                            <i class="fas fa-info-circle me-2"></i>Instructions/Description
+                        </label>
+                        <textarea class="form-control" id="description" name="description" rows="3" required
+                                  placeholder="Provide detailed instructions for completing this request"></textarea>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="taskDescription" class="form-label">
+                            <i class="fas fa-tasks me-2"></i>Task Description
+                        </label>
+                        <input type="text" class="form-control" id="taskDescription" name="task_description" required
+                               placeholder="Brief description of the task">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <label class="form-label mb-0">
+                                <i class="fas fa-question-circle me-2"></i>Questions
+                            </label>
+                            <button type="button" class="btn btn-outline-primary" onclick="addQuestion()">
+                                <i class="fas fa-plus me-2"></i>Add Question
+                            </button>
+                        </div>
+                        
+                        <div id="questionsContainer">
+                            <!-- Questions will be dynamically added here -->
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="/" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Home
+                        </a>
+                        <button type="submit" class="btn btn-custom">
+                            <i class="fas fa-paper-plane me-2"></i>Create Request
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let questionCount = 0;
+    
+    function addQuestion() {
+        questionCount++;
+        const container = document.getElementById('questionsContainer');
+        const questionDiv = document.createElement('div');
+        questionDiv.className = 'card mb-3';
+        questionDiv.id = `question-${questionCount}`;
+        
+        questionDiv.innerHTML = `
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h6 class="card-title">Question ${questionCount}</h6>
+                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeQuestion(${questionCount})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <div class="mb-3">
+                    <label for="question-${questionCount}-text" class="form-label">Question Text</label>
+                    <input type="text" class="form-control question-input" 
+                           id="question-${questionCount}-text" 
+                           placeholder="Enter your question"
+                           required>
+                </div>
+                <div class="mb-3">
+                    <label for="question-${questionCount}-type" class="form-label">Response Type</label>
+                    <select class="form-select" id="question-${questionCount}-type">
+                        <option value="text">Text</option>
+                        <option value="number">Number</option>
+                        <option value="date">Date</option>
+                        <option value="choice">Multiple Choice</option>
+                    </select>
+                </div>
+            </div>
+        `;
+        
+        container.appendChild(questionDiv);
+    }
+    
+    function removeQuestion(questionId) {
+        const questionDiv = document.getElementById(`question-${questionId}`);
+        if (questionDiv) {
+            questionDiv.remove();
+        }
+    }
+    
+    // Add first question by default
+    addQuestion();
+    
+    // Handle form submission
+    document.getElementById('requestForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Collect all questions
+        const questions = [];
+        const questionInputs = document.querySelectorAll('.question-input');
+        
+        questionInputs.forEach((input, index) => {
+            const questionId = input.id.split('-')[1];
+            const typeSelect = document.getElementById(`question-${questionId}-type`);
+            
+            if (input.value.trim()) {
+                questions.push({
+                    id: `question_${questionId}`,
+                    text: input.value.trim(),
+                    type: typeSelect.value
+                });
+            }
+        });
+        
+        if (questions.length === 0) {
+            showAlert('Please add at least one question', 'warning');
+            return;
+        }
+        
+        // Prepare form data
+        const formData = new FormData();
+        formData.append('assigned_to', document.getElementById('assignedTo').value);
+        formData.append('description', document.getElementById('description').value);
+        formData.append('task_description', document.getElementById('taskDescription').value);
+        formData.append('questions', JSON.stringify(questions));
+        
+        try {
+            const response = await fetch('/api/requests', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showAlert('Data request created successfully!', 'success');
+                // Reset form
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 2000);
+            } else {
+                showAlert('Error creating request: ' + (result.detail || 'Unknown error'), 'danger');
+            }
+        } catch (error) {
+            showAlert('Network error: ' + error.message, 'danger');
+        }
+    });
+</script>
+{% endblock %} 
