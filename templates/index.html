@@ -2,38 +2,40 @@
 
 {% block title %}Data Collection Home{% endblock %}
 
-{% block header %}Welcome to Data Collection System{% endblock %}
+{% block header %}Data Collection Platform{% endblock %}
 
-{% block subtitle %}Choose your task to begin the workflow{% endblock %}
+{% block subtitle %}Streamlined data requests and responses with StrangeMatter integration{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6 mb-4">
+<div class="row g-5">
+    <div class="col-lg-6">
         <div class="card card-custom h-100">
-            <div class="card-body text-center d-flex flex-column">
+            <div class="card-body d-flex flex-column">
                 <div class="mb-4">
-                    <i class="fas fa-plus-circle" style="font-size: 4rem; color: var(--secondary-color);"></i>
+                    <h3 style="font-size: 1.75rem; font-weight: 300; color: var(--primary-color); margin-bottom: 16px; line-height: 1.2;">Create Request</h3>
+                    <p style="color: var(--text-secondary); font-size: 16px; line-height: 1.5; margin-bottom: 24px;">Build structured data collection workflows using dynamic questions and StrangeMatter component schema. Assign requests to specific team members and track comprehensive project data.</p>
                 </div>
-                <h3 class="card-title">Create Data Request</h3>
-                <p class="card-text flex-grow-1">Create a new Dynamic Project Data Request. Assign questions to team members for data collection using the StrangeMatter schema.</p>
-                <a href="/create-request" class="btn btn-custom btn-lg">
-                    <i class="fas fa-arrow-right me-2"></i>Create Request
-                </a>
+                <div class="mt-auto">
+                    <a href="/create-request" class="btn btn-custom" style="text-transform: uppercase; letter-spacing: 0.5px; font-size: 14px; font-weight: 500;">
+                        Create New Request
+                    </a>
+                </div>
             </div>
         </div>
     </div>
     
-    <div class="col-md-6 mb-4">
+    <div class="col-lg-6">
         <div class="card card-custom h-100">
-            <div class="card-body text-center d-flex flex-column">
+            <div class="card-body d-flex flex-column">
                 <div class="mb-4">
-                    <i class="fas fa-clipboard-check" style="font-size: 4rem; color: var(--success-color);"></i>
+                    <h3 style="font-size: 1.75rem; font-weight: 300; color: var(--primary-color); margin-bottom: 16px; line-height: 1.2;">Answer Requests</h3>
+                    <p style="color: var(--text-secondary); font-size: 16px; line-height: 1.5; margin-bottom: 24px;">Respond to assigned data collection requests using voice-to-text technology or traditional input methods. All responses are automatically linked and preserved within the system architecture.</p>
                 </div>
-                <h3 class="card-title">Answer Requests</h3>
-                <p class="card-text flex-grow-1">View and respond to data requests assigned to you. Use voice-to-text functionality to efficiently provide answers.</p>
-                <a href="/answer-requests" class="btn btn-custom btn-lg btn-accent">
-                    <i class="fas fa-microphone me-2"></i>Answer Requests
-                </a>
+                <div class="mt-auto">
+                    <a href="/answer-requests" class="btn btn-custom btn-accent" style="text-transform: uppercase; letter-spacing: 0.5px; font-size: 14px; font-weight: 500;">
+                        View Requests
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -41,32 +43,25 @@
 
 <div class="row mt-5">
     <div class="col-12">
-        <div class="card card-custom">
-            <div class="card-header bg-light">
-                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>How It Works</h5>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-4 text-center mb-3">
-                        <div class="mb-3">
-                            <i class="fas fa-edit" style="font-size: 2rem; color: var(--secondary-color);"></i>
-                        </div>
-                        <h6>1. Create Request</h6>
-                        <p class="text-muted">Define questions and assign them to team members using StrangeMatter components.</p>
+        <div style="border-top: 1px solid var(--border-color); padding-top: 60px;">
+            <h2 style="font-size: 2.5rem; font-weight: 300; color: var(--primary-color); margin-bottom: 48px; line-height: 1.2;">System Overview</h2>
+            <div class="row g-5">
+                <div class="col-md-4">
+                    <div style="border-left: 3px solid var(--secondary-color); padding-left: 24px;">
+                        <h4 style="font-size: 1.25rem; font-weight: 500; color: var(--primary-color); margin-bottom: 12px;">Define & Assign</h4>
+                        <p style="color: var(--text-secondary); font-size: 16px; line-height: 1.6;">Create structured questions and assign to specific team members using email identification for targeted data collection.</p>
                     </div>
-                    <div class="col-md-4 text-center mb-3">
-                        <div class="mb-3">
-                            <i class="fas fa-share-alt" style="font-size: 2rem; color: var(--warning-color);"></i>
-                        </div>
-                        <h6>2. Distribute</h6>
-                        <p class="text-muted">Requests are automatically available to assigned team members.</p>
+                </div>
+                <div class="col-md-4">
+                    <div style="border-left: 3px solid var(--secondary-color); padding-left: 24px;">
+                        <h4 style="font-size: 1.25rem; font-weight: 500; color: var(--primary-color); margin-bottom: 12px;">Collaborate</h4>
+                        <p style="color: var(--text-secondary); font-size: 16px; line-height: 1.6;">Team members receive requests and respond efficiently using voice input or traditional text-based methods.</p>
                     </div>
-                    <div class="col-md-4 text-center mb-3">
-                        <div class="mb-3">
-                            <i class="fas fa-database" style="font-size: 2rem; color: var(--success-color);"></i>
-                        </div>
-                        <h6>3. Collect & Store</h6>
-                        <p class="text-muted">Responses are captured with full context and stored in the StrangeMatter schema.</p>
+                </div>
+                <div class="col-md-4">
+                    <div style="border-left: 3px solid var(--secondary-color); padding-left: 24px;">
+                        <h4 style="font-size: 1.25rem; font-weight: 500; color: var(--primary-color); margin-bottom: 12px;">Capture & Link</h4>
+                        <p style="color: var(--text-secondary); font-size: 16px; line-height: 1.6;">All responses are captured with full context and linked using StrangeMatter schema relationships.</p>
                     </div>
                 </div>
             </div>
