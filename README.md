@@ -1,25 +1,25 @@
 # Data Collection Expanded Sketch
 
-A StrangeMatter component-based data collection system that enables structured information requests and responses with full traceability.
+A data collection system that uses HOK's StrangeMatter Protocol components to enable structured information requests and responses with full traceability.
 
 ## Overview
 
-This application demonstrates a complete workflow where users can create information requests, deliver them to assigned individuals, and capture responses using the StrangeMatter schema. All questions, responses, and connected information are preserved and linked together.
+This application demonstrates a complete workflow where users can create information requests, deliver them to assigned individuals, and capture responses using StrangeMatter Protocol standards. All questions, responses, and connected information are preserved and linked together using HOK's component implementations.
 
 ## Features
 
 ### 🎯 Core Functionality
 - **Two-Phase Workflow**: Request creation and response collection
-- **StrangeMatter Integration**: Uses HOK StrangeMatter component templates
+- **StrangeMatter Protocol**: Uses HOK's StrangeMatter Protocol component implementations
 - **Voice-to-Text**: Speech recognition for efficient data entry
 - **Database Storage**: SQLite for local development, PostgreSQL for deployment
-- **Modern UI**: Beautiful, responsive web interface
+- **Modern UI**: Clean, professional interface following HOK design standards
 
-### 📊 StrangeMatter Schema
-- Follows `hok.projectdata.request.dynamic.json` template for requests
-- Uses `hok.projectdata.dynamic.json` template for responses  
-- Maintains full component relationships via `Using` field
-- Preserves all metadata including timestamps, GUIDs, and hashes
+### 📊 StrangeMatter Protocol Implementation
+- Follows HOK's `hok.projectdata.request.dynamic.json` component template for requests
+- Uses HOK's `hok.projectdata.dynamic.json` component template for responses  
+- Maintains full component relationships via `Using` field per StrangeMatter Protocol
+- Preserves all metadata including timestamps, GUIDs, and hashes as specified by the protocol
 
 ## Quick Start
 
@@ -54,7 +54,7 @@ Navigate to [http://localhost:8000](http://localhost:8000)
    - **Instructions**: Detailed guidance for completing the request
    - **Task Description**: Brief summary of what's needed
    - **Questions**: Add one or more questions with types (text, number, date, choice)
-3. Submit the request - it's saved as a StrangeMatter component
+3. Submit the request - it's saved as a StrangeMatter Protocol component using HOK's template
 
 ### Workflow 2: Answering Requests
 
@@ -64,13 +64,13 @@ Navigate to [http://localhost:8000](http://localhost:8000)
 4. For each question:
    - Type your answer directly, OR
    - Click the 🎤 microphone icon to use voice input
-5. Submit your response - it's linked to the original request via StrangeMatter schema
+5. Submit your response - it's linked to the original request via StrangeMatter Protocol specifications
 
 ## Technical Architecture
 
 ### Backend (FastAPI)
 - **Database**: SQLAlchemy with SQLite (development) / PostgreSQL (production)
-- **Models**: StrangeMatter component schema mapped to relational database
+- **Models**: StrangeMatter Protocol component schema mapped to relational database
 - **API Endpoints**: RESTful API for CRUD operations
 - **Templates**: Jinja2 for server-side rendering
 
@@ -83,8 +83,8 @@ Navigate to [http://localhost:8000](http://localhost:8000)
 ### Database Schema
 
 The `StrangeMatterComponent` model includes:
-- StrangeMatter standard fields (ComponentType, GUIDs, timestamps)
-- Relationship tracking (`Using` field links responses to requests)
+- StrangeMatter Protocol standard fields (ComponentType, GUIDs, timestamps)
+- Relationship tracking (`Using` field links responses to requests per protocol)
 - JSON payload storage for questions and answers
 - Indexing for efficient querying by assigned person
 
@@ -101,9 +101,11 @@ The `StrangeMatterComponent` model includes:
 | `/api/responses` | POST | Submit response |
 | `/api/assigned-people` | GET | List people with requests |
 
-## StrangeMatter Integration
+## StrangeMatter Protocol Implementation
 
-### Request Components
+This application uses HOK's implementation of StrangeMatter Protocol components for data collection workflows.
+
+### Request Components (HOK Implementation)
 ```json
 {
   "ComponentType": "https://github.com/HOKGroup/hok_strangematter_components/DataCollectionComponents/hok.projectdata.request.dynamic.json",
@@ -117,7 +119,7 @@ The `StrangeMatterComponent` model includes:
 }
 ```
 
-### Response Components
+### Response Components (HOK Implementation)
 ```json
 {
   "ComponentType": "https://github.com/HOKGroup/hok_strangematter_components/DataCollectionComponents/hok.projectdata.dynamic.json",
@@ -160,10 +162,14 @@ dokku config:set myapp DATABASE_URL=postgresql://...
 4. Test thoroughly
 5. Submit a pull request
 
+## About StrangeMatter Protocol
+
+StrangeMatter is an independent data protocol for structured information exchange. This project demonstrates how to build applications using HOK's specific component implementations that follow the StrangeMatter Protocol standards.
+
 ## License
 
-This project is part of the HOK StrangeMatter ecosystem. See the main repository for licensing information.
+This project demonstrates the use of HOK's StrangeMatter Protocol component implementations. Please refer to the respective repositories for licensing information.
 
 ---
 
-**Built with**: FastAPI, SQLAlchemy, Bootstrap 5, and the HOK StrangeMatter Components framework. 
+**Built with**: FastAPI, SQLAlchemy, Bootstrap 5, and HOK's StrangeMatter Protocol Components. 
